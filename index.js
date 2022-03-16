@@ -63,6 +63,7 @@ app.get('/getIpInfo', async (req, res) => {
   res.send(result);
 });
 app.get('/getCustomIpInfo', async (req, res) => {
+  console.log('test')
   let ip = req.query.ip;
   let result = await getIpInfo(ip);
   res.send(result);

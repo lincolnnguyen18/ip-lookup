@@ -3,8 +3,8 @@ import Loading from './components/Loading.vue'
 export default {
   data() {
     return {
-      url: 'google.com',
-      look_for: 'myself',
+      url: '107.196.10.160',
+      look_for: 'ip',
       mode: 'input',
       ip: 'N/A',
       country: 'N/A',
@@ -119,19 +119,21 @@ export default {
       });
     },
     setLookfor(look_for) {
-      this.look_for = look_for
       if (look_for === 'url') {
         this.url = 'syosetu.com'
         this.$refs.input_text.innerHTML = 'Enter URL'
       } else if (look_for === 'ip') {
         this.url = '107.196.10.160'
         this.$refs.input_text.innerHTML = 'Enter IP'
-      } else {
-        this.$refs.url.deselect()
+      } else if (look_for === 'myself') {
+        this.$refs.url.blur();
       }
-      setTimeout(() => {
-        this.$refs.url.select()
-      }, 1)
+      this.look_for = look_for
+      if (look_for != 'myself') {
+        setTimeout(() => {
+          this.$refs.url.select()
+        }, 1)
+      }
     },
     setMode(mode) {
       this.mode = mode
@@ -146,6 +148,7 @@ export default {
         }
       }
     })
+    this.$refs.url.select();
   },
   components: { Loading }
 }
@@ -163,7 +166,7 @@ export default {
       </div>
       <div class="input" :class="{'disabled': lookingForMyself}">
         <span ref="input_text"></span>
-        <input type="text" v-model="url" @keyup.enter="lookup" ref="url">
+        <input type="text" v-model="url" @keyup.enter="lookup" ref="url" class="url-input">
       </div>
       <div class="lookup">
         <button @click="lookup" :class="{'invisible': lookup_loading}">Lookup</button>
