@@ -98,7 +98,7 @@ export default {
       await fetch('/getIpInfo')
         .then(res => res.json())
         .then(data => {
-          console.log(data)
+          // console.log(data)
           this.setOutput(data);
         })
     },
@@ -106,7 +106,7 @@ export default {
       await fetch(`/getCustomIpInfo?ip=${encodeURI(this.url)}`)
         .then(res => res.json())
         .then(data => {
-          console.log(data)
+          // console.log(data)
           this.setOutput(data);
         })
     },
@@ -114,7 +114,7 @@ export default {
       await fetch(`/getDomainInfo?domain=${encodeURI(this.url)}`)
       .then(res => res.json())
       .then(data => {
-        console.log(data)
+        // console.log(data)
         this.setOutput(data);
       });
     },
