@@ -1,7 +1,10 @@
-const express = require('express');
-const cors = require('cors');
-const dns = require('dns');
-const geoip = require('fast-geoip');
+import express from 'express';
+import cors from 'cors';
+import dns from 'dns';
+import normalizeUrl from 'normalize-url';
+import geoip from 'fast-geoip';
+import path from 'path';
+const __dirname = path.resolve();
 const app = express();
 app.use(cors());
 app.set('trust proxy',true);
@@ -22,16 +25,22 @@ function getDomainIp(domain) {
 }
 const getDomainInfo = async (domain) => {
   // console.log(domain)
-  let ip = await getDomainIp(domain);
-  // console.log(ip)
-  if (ip) {
-    const domainInfo = await geoip.lookup(ip);
-    // console.log(domainInfo);
-    domainInfo.ip = ip;
-    domainInfo.timezone = domainInfo.timezone.replace('_', ' ');
-    return domainInfo;
-  } else {
-    return null;
+  try {
+    let ip = await getDomainIp(normalizeUrl(domain))
+    if (ip == '127.0.0.1') ip = '107.196.10.160';
+    // console.log(ip)
+    if (ip) {
+      const domainInfo = await geoip.lookup(ip);
+      // console.log(domainInfo);
+      domainInfo.ip = ip;
+      domainInfo.timezone = domainInfo.timezone.replace('_', ' ');
+      return domainInfo;
+    } else {
+      return {error: 'No IP found'};
+    }
+  } catch (err) {
+    console.log(err);
+    return {error: 'No IP found'};
   }
 };
 const getIpInfo = async (ip) => {
@@ -41,7 +50,7 @@ const getIpInfo = async (ip) => {
     ipInfo.timezone = ipInfo.timezone.replace('_', ' ');
     return ipInfo;
   } else {
-    return null;
+    return {error: 'No IP found'};
   }
 };
 

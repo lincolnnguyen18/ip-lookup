@@ -51,40 +51,44 @@ export default {
       this.lookup_loading = false
     },
     setOutput(data) {
-      this.ip = data.ip ? data.ip : 'N/A'
-      this.country = data.country ? data.country : 'N/A'
-      let query = ""
-      let queryLL = ""
-      const regionNamesInEnglish = new Intl.DisplayNames(['en'], { type: 'region' });
-      if (data.country) {
-        query = regionNamesInEnglish.of(data.country)
+      if (!data.error) {
+        this.ip = data.ip ? data.ip : 'N/A'
+        this.country = data.country ? data.country : 'N/A'
+        let query = ""
+        let queryLL = ""
+        const regionNamesInEnglish = new Intl.DisplayNames(['en'], { type: 'region' });
+        if (data.country) {
+          query = regionNamesInEnglish.of(data.country)
+        }
+        this.region = data.region ? data.region : 'N/A'
+        if (data.region) {
+          query = `${data.region}, ${regionNamesInEnglish.of(data.country)}`
+        }
+        this.timezone = data.timezone ? data.timezone : 'N/A'
+        this.city = data.city ? data.city : 'N/A'
+        if (data.city) {
+          query = `${data.city}, ${data.region}, ${regionNamesInEnglish.of(data.country)}`
+        }
+        if (data.ll) {
+          let latitude = data.ll[0] > 0 ? `${data.ll[0]}°N` : `${-data.ll[0]}°S`
+          let longitude = data.ll[1] > 0 ? `${data.ll[1]}°E` : `${-data.ll[1]}°W`
+          this.coordinates = `${latitude}, ${longitude}`
+          query = `${latitude}, ${longitude}`
+          queryLL = `${data.ll[0]}, ${data.ll[1]}`
+        }
+        let queryString = `https://www.google.com/maps/embed/v1/place?key=AIzaSyB_LFO1wB7HlWiDPLWtbEu2qRSz6iJDqOA
+        &q=${query}
+        &center=${queryLL}
+        &zoom=4
+        &maptype=roadmap`
+        this.$refs.iframe.src = queryString
       }
-      this.region = data.region ? data.region : 'N/A'
-      if (data.region) {
-        query = `${data.region}, ${regionNamesInEnglish.of(data.country)}`
-      }
-      this.timezone = data.timezone ? data.timezone : 'N/A'
-      this.city = data.city ? data.city : 'N/A'
-      if (data.city) {
-        query = `${data.city}, ${data.region}, ${regionNamesInEnglish.of(data.country)}`
-      }
-      if (data.ll) {
-        let latitude = data.ll[0] > 0 ? `${data.ll[0]}°N` : `${data.ll[0]}°S`
-        let longitude = data.ll[1] > 0 ? `${data.ll[1]}°E` : `${data.ll[1]}°W`
-        this.coordinates = `${latitude}, ${longitude}`
-        queryLL = `${data.ll[0]}, ${data.ll[1]}`
-      }
-      let queryString = `https://www.google.com/maps/embed/v1/place?key=AIzaSyB_LFO1wB7HlWiDPLWtbEu2qRSz6iJDqOA
-      &q=${query}
-      &center=${queryLL}
-      &zoom=4
-      &maptype=roadmap`
-      this.$refs.iframe.src = queryString
     },
     lookupMyself: async function() {
       await fetch('/getIpInfo')
         .then(res => res.json())
         .then(data => {
+          console.log(data)
           this.setOutput(data);
         })
     },
@@ -92,6 +96,7 @@ export default {
       await fetch(`/getDomainInfo?domain=${encodeURI(this.url)}`)
       .then(res => res.json())
       .then(data => {
+        console.log(data)
         this.setOutput(data);
       });
     },
@@ -121,7 +126,7 @@ export default {
 
 <template>
 <div class="left">
-  <h1>IP and Address<br />Lookup</h1>
+  <h1 class="header">IP and Address<br />Lookup</h1>
   <div class="left-body">
     <div class="input-mode" v-if="modeIsInput">
       <div class="slider">
@@ -288,5 +293,8 @@ button:hover {
 }
 .invisible {
   visibility: hidden;
+}
+.header {
+  user-select: none;
 }
 </style>

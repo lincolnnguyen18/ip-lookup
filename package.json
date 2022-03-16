@@ -2,12 +2,14 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.17.3",
-    "fast-geoip": "1.1.53"
+    "fast-geoip": "1.1.53",
+    "normalize-url": "^7.0.3"
   },
   "name": "ip-lookup",
   "version": "1.0.0",
   "main": "index.js",
   "repository": "https://github.com/lincolnnguyen18/ip-lookup.git",
   "author": "lincolnnguyen18 <letsmakeaworld@icloud.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "type": "module"
 }

@@ -25,6 +25,6 @@ function getDomainIp(domain) {
   });
 }
 
-getDomainIp('https://vnexpress.net/').then((res) => {
+getDomainIp('syosetu.com').then((res) => {
   console.log(res);
 });
