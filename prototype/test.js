@@ -30,10 +30,19 @@ const getDomainInfo = async (domain) => {
   }
 };
 
+const getIpInfo = async (ip) => {
+  const ipInfo = await geoip.lookup(ip);
+  return ipInfo;
+};
+
 
 // const ip = "129.49.100.88";
 // const geo = await geoip.lookup(ip);
 
-getDomainInfo("wikipedia.com").then((res) => {
+// getDomainInfo("wikipedia.com").then((res) => {
+//   console.log(res);
+// });
+
+getIpInfo("129.49.100.88").then((res) => {
   console.log(res);
 });
