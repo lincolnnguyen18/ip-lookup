@@ -1,4 +1,5 @@
 const domainPing = require("domain-ping");
+const geoip = require('fast-geoip');
 
 const getDomainIp = async (domain) => {
   try {
@@ -16,8 +17,6 @@ const getDomainIp = async (domain) => {
 // .catch((error) => {
 //   console.error(error);
 // });
-
-const geoip = require('fast-geoip');
 
 const getDomainInfo = async (domain) => {
   let domainIp = await getDomainIp(domain);

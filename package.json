@@ -1,7 +1,14 @@
 {
   "dependencies": {
+    "cors": "^2.8.5",
     "domain-ping": "^0.2.1",
     "express": "^4.17.3",
-    "fast-geoip": "^1.1.63"
-  }
+    "fast-geoip": "1.1.53"
+  },
+  "name": "ip-lookup",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/lincolnnguyen18/ip-lookup.git",
+  "author": "lincolnnguyen18 <letsmakeaworld@icloud.com>",
+  "license": "MIT"
 }
