@@ -1,22 +1,19 @@
-const domainPing = require("domain-ping");
+const dns = require('dns');
 const geoip = require('fast-geoip');
 
-const getDomainIp = async (domain) => {
-  try {
-    const ip = await domainPing(domain);
-    return ip;
-  } catch (error) {
-    return null;
-  }
-};
-
-// domainPing('wikipedia.com')
-// .then((res) => {
-  
-// })
-// .catch((error) => {
-//   console.error(error);
-// });
+function getDomainIp(domain) {
+  return new Promise((resolve, reject) => {
+    let url = new URL(domain);
+    let options = { family: 4 };
+    dns.lookup(url.hostname, options, (err, address, family) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(address);
+      }
+    });
+  });
+}
 
 const getDomainInfo = async (domain) => {
   let domainIp = await getDomainIp(domain);
@@ -42,7 +39,7 @@ const getIpInfo = async (ip) => {
 //   console.log(res);
 // });
 
-getIpInfo("129.49.100.88").then((res) => {
+getIpInfo("111.65.250.2").then((res) => {
   // replace _ with space in res.timezone
   res.timezone = res.timezone.replace(/_/g, " ");
   console.log(res);

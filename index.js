@@ -1,32 +1,32 @@
 const express = require('express');
 const cors = require('cors');
-const domainPing = require("domain-ping");
+const dns = require('dns');
 const geoip = require('fast-geoip');
 const app = express();
 app.use(cors());
 app.set('trust proxy',true);
 app.use('/assets', express.static('assets'));
 
-const getDomainIp = async (domain) => {
-  try {
-    const ip = await domainPing(domain);
-    if (ip.ip == '127.0.0.1') {
-      return {ip: '107.196.10.160'}
-    } else {
-      return ip;
-    }
-  } catch (error) {
-    return null;
-  }
-};
+function getDomainIp(domain) {
+  return new Promise((resolve, reject) => {
+    let url = new URL(domain);
+    let options = { family: 4 };
+    dns.lookup(url.hostname, options, (err, address, family) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(address);
+      }
+    });
+  });
+}
 const getDomainInfo = async (domain) => {
-  console.log(domain)
-  let domainIp = await getDomainIp(domain);
-  console.log(domainIp)
-  if (domainIp.ip) {
-    let ip = domainIp.ip
+  // console.log(domain)
+  let ip = await getDomainIp(domain);
+  // console.log(ip)
+  if (ip) {
     const domainInfo = await geoip.lookup(ip);
-    console.log(domainInfo);
+    // console.log(domainInfo);
     domainInfo.ip = ip;
     domainInfo.timezone = domainInfo.timezone.replace('_', ' ');
     return domainInfo;

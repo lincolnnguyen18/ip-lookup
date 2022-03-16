@@ -30,55 +30,70 @@ export default {
     }
   },
   methods: {
+    back() {
+      this.setMode('input')
+      setTimeout(() => {
+        if (this.$refs.url && this.look_for === 'url')
+          this.$refs.url.select()
+      }, 1)
+    },
     lookup: async function() {
-      this.lookup_loading = true
-      console.log(this.look_for)
-      console.log(this.lookingForMyself)
-      console.log(this.lookingForURL)
       if (this.lookingForMyself) {
+        this.lookup_loading = true
         await this.lookupMyself()
-      } else {
+      } else if (this.url.trim()) {
+        this.lookup_loading = true
         await this.lookupURL()
+      } else {
+        return;
       }
       this.mode = 'output'
       this.lookup_loading = false
+    },
+    setOutput(data) {
+      this.ip = data.ip ? data.ip : 'N/A'
+      this.country = data.country ? data.country : 'N/A'
+      let query = ""
+      let queryLL = ""
+      const regionNamesInEnglish = new Intl.DisplayNames(['en'], { type: 'region' });
+      if (data.country) {
+        query = regionNamesInEnglish.of(data.country)
+      }
+      this.region = data.region ? data.region : 'N/A'
+      if (data.region) {
+        query = `${data.region}, ${regionNamesInEnglish.of(data.country)}`
+      }
+      this.timezone = data.timezone ? data.timezone : 'N/A'
+      this.city = data.city ? data.city : 'N/A'
+      if (data.city) {
+        query = `${data.city}, ${data.region}, ${regionNamesInEnglish.of(data.country)}`
+      }
+      if (data.ll) {
+        let latitude = data.ll[0] > 0 ? `${data.ll[0]}°N` : `${data.ll[0]}°S`
+        let longitude = data.ll[1] > 0 ? `${data.ll[1]}°E` : `${data.ll[1]}°W`
+        this.coordinates = `${latitude}, ${longitude}`
+        queryLL = `${data.ll[0]}, ${data.ll[1]}`
+      }
+      let queryString = `https://www.google.com/maps/embed/v1/place?key=AIzaSyB_LFO1wB7HlWiDPLWtbEu2qRSz6iJDqOA
+      &q=${query}
+      &center=${queryLL}
+      &zoom=4
+      &maptype=roadmap`
+      this.$refs.iframe.src = queryString
     },
     lookupMyself: async function() {
       await fetch('/getIpInfo')
         .then(res => res.json())
         .then(data => {
-          this.ip = data.ip ? data.ip : 'N/A'
-          this.country = data.country ? data.country : 'N/A'
-          let query = ""
-          let queryLL = ""
-          if (data.country) {
-            query = data.country
-          }
-          this.region = data.region ? data.region : 'N/A'
-          if (data.region) {
-            query = `${data.region}, ${data.country}`
-          }
-          this.timezone = data.timezone ? data.timezone : 'N/A'
-          this.city = data.city ? data.city : 'N/A'
-          if (data.city) {
-            query = `${data.city}, ${data.region}, ${data.country}`
-          }
-          if (data.ll) {
-            let latitude = data.ll[0] > 0 ? `${data.ll[0]}°N` : `${data.ll[0]}°S`
-            let longitude = data.ll[1] > 0 ? `${data.ll[1]}°E` : `${data.ll[1]}°W`
-            this.coordinates = `${latitude}, ${longitude}`
-            queryLL = `${data.ll[0]}, ${data.ll[1]}`
-          }
-          let queryString = `https://www.google.com/maps/embed/v1/place?key=AIzaSyB_LFO1wB7HlWiDPLWtbEu2qRSz6iJDqOA
-          &q=${query}
-          &center=${queryLL}
-          &zoom=4
-          &maptype=roadmap`
-          this.$refs.iframe.src = queryString
+          this.setOutput(data);
         })
     },
     lookupURL: async function() {
-      await fetch()
+      await fetch(`/getDomainInfo?domain=${encodeURI(this.url)}`)
+      .then(res => res.json())
+      .then(data => {
+        this.setOutput(data);
+      });
     },
     setLookfor(look_for) {
       this.look_for = look_for
@@ -89,6 +104,16 @@ export default {
     setMode(mode) {
       this.mode = mode
     }
+  },
+  mounted() {
+    // listen for escape
+    window.addEventListener('keydown', e => {
+      if (e.key == 'Escape') {
+        if (this.mode === 'output') {
+          this.back()
+        }
+      }
+    })
   },
   components: { Loading }
 }
@@ -124,7 +149,7 @@ export default {
       <span><b>Timezone:</b> {{ timezone }}</span>
       <span><b>City:</b> {{ city }}</span>
       <span><b>Coordinates:</b> {{ coordinates }}</span>
-      <button class="back" @click="setMode('input')">Back</button>
+      <button class="back" @click="back">Back</button>
     </div>
   </div>
 </div>
@@ -160,7 +185,7 @@ html, body, #app {
 }
 #app {
   display: grid;
-  grid-template-columns: 333px 1fr;
+  grid-template-columns: 350px 1fr;
 }
 .left {
   display: flex;
@@ -186,7 +211,11 @@ html, body, #app {
   color: white;
   background: black;
 }
-/* get .slider span with not selecte class */
+
+.slider span:not(.selected) {
+  border: 1px solid #808080;
+}
+
 .slider span:not(.selected):hover {
   background: #f5f5f5;
 }
@@ -194,7 +223,7 @@ html, body, #app {
   text-align: center;
 }
 .left-body {
-  width: 260px;
+  width: 280px;
 }
 .input {
   display: flex;

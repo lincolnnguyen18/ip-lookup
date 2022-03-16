@@ -1,7 +1,6 @@
 {
   "dependencies": {
     "cors": "^2.8.5",
-    "domain-ping": "^0.2.1",
     "express": "^4.17.3",
     "fast-geoip": "1.1.53"
   },
