@@ -8,7 +8,7 @@ const __dirname = path.resolve();
 const app = express();
 app.use(cors());
 app.set('trust proxy',true);
-app.use('/assets', express.static('assets'));
+app.use(express.static('public'));
 
 function getDomainIp(domain) {
   return new Promise((resolve, reject) => {
