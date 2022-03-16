@@ -2,12 +2,27 @@
 export default {
   data() {
     return {
-      url: 'google.com'
+      url: 'google.com',
+      mode: 'myself'
+    }
+  },
+  computed: {
+    modeIsMyself() {
+      return this.mode === 'myself'
+    },
+    modeIsURL() {
+      return this.mode === 'url'
     }
   },
   methods: {
-    getIP() {
+    lookup() {
       console.log(this.url)
+    },
+    setMode(mode) {
+      this.mode = mode
+      if (mode === 'url') {
+        this.$refs.url.select()
+      }
     }
   }
 }
@@ -18,14 +33,14 @@ export default {
   <h1>IP and Address Lookup</h1>
   <div class="left-body">
     <div class="slider">
-      <span class="selected">For myself</span>
-      <span>For URL</span>
+      <span :class="{'selected': modeIsMyself}" @click="setMode('myself')">For myself</span>
+      <span :class="{'selected': modeIsURL}" @click="setMode('url')">For URL</span>
     </div>
-    <div class="input">
+    <div class="input" :class="{'disabled': modeIsMyself}">
       <span>Enter URL</span>
-      <input type="text" v-model="url" @keyup.enter="getIP">
+      <input type="text" v-model="url" @keyup.enter="lookup" ref="url">
     </div>
-    <button class="lookup">Lookup</button>
+    <button class="lookup" @click="lookup">Lookup</button>
   </div>
 </div>
 <div class="right">
@@ -86,11 +101,12 @@ input[type=text] {
   padding: 10px;
   border: 1px solid #808080;
   border-radius: 7px;
+  margin-top: 6px;
 }
 .left-body {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 24px;
 }
 button {
   border: none;
@@ -112,5 +128,9 @@ button:hover {
 .right {
   width: 100%;
   background: blue;
+}
+.disabled {
+  pointer-events: none;
+  opacity: 0.1;
 }
 </style>
