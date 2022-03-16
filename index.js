@@ -62,6 +62,11 @@ app.get('/getIpInfo', async (req, res) => {
   let result = await getIpInfo(req.ip);
   res.send(result);
 });
+app.get('/getCustomIpInfo', async (req, res) => {
+  let ip = req.query.ip;
+  let result = await getIpInfo(ip);
+  res.send(result);
+});
 app.get('/getDomainInfo', async (req, res) => {
   let domain = req.query.domain;
   // console.log(domain);

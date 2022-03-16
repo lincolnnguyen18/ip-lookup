@@ -22,12 +22,22 @@ export default {
     lookingForURL() {
       return this.look_for === 'url'
     },
+    lookingForIP() {
+      return this.look_for === 'ip'
+    },
     modeIsInput() {
       return this.mode === 'input'
     },
     modeIsOutput() {
       return this.mode === 'output'
     }
+    // inputText() {
+    //   if (this.lookingForURL) {
+    //     return 'Enter URL'
+    //   } else {
+    //     return 'Enter IP'
+    //   }
+    // }
   },
   methods: {
     back() {
@@ -92,6 +102,14 @@ export default {
           this.setOutput(data);
         })
     },
+    lookupIP: async function(ip) {
+      await fetch(`/getCustomIpInfo?ip=${encodeURI(this.url)}`)
+        .then(res => res.json())
+        .then(data => {
+          console.log(data)
+          this.setOutput(data);
+        })
+    },
     lookupURL: async function() {
       await fetch(`/getDomainInfo?domain=${encodeURI(this.url)}`)
       .then(res => res.json())
@@ -103,8 +121,17 @@ export default {
     setLookfor(look_for) {
       this.look_for = look_for
       if (look_for === 'url') {
-        this.$refs.url.select()
+        this.url = 'syosetu.com'
+        this.$refs.input_text.innerHTML = 'Enter URL'
+      } else if (look_for === 'ip') {
+        this.url = '107.196.10.160'
+        this.$refs.input_text.innerHTML = 'Enter IP'
+      } else {
+        this.$refs.url.deselect()
       }
+      setTimeout(() => {
+        this.$refs.url.select()
+      }, 1)
     },
     setMode(mode) {
       this.mode = mode
@@ -132,9 +159,10 @@ export default {
       <div class="slider">
         <span :class="{'selected': lookingForMyself}" @click="setLookfor('myself')">For myself</span>
         <span :class="{'selected': lookingForURL}" @click="setLookfor('url')">For URL</span>
+        <span :class="{'selected': lookingForIP}" @click="setLookfor('ip')">For IP</span>
       </div>
       <div class="input" :class="{'disabled': lookingForMyself}">
-        <span>Enter URL</span>
+        <span ref="input_text"></span>
         <input type="text" v-model="url" @keyup.enter="lookup" ref="url">
       </div>
       <div class="lookup">
@@ -151,8 +179,8 @@ export default {
       <span><b>IP:</b> {{ ip }}</span>
       <span><b>Country:</b> {{ country }}</span>
       <span><b>Region:</b> {{ region }}</span>
-      <span><b>Timezone:</b> {{ timezone }}</span>
       <span><b>City:</b> {{ city }}</span>
+      <span><b>Timezone:</b> {{ timezone }}</span>
       <span><b>Coordinates:</b> {{ coordinates }}</span>
       <button class="back" @click="back">Back</button>
     </div>
