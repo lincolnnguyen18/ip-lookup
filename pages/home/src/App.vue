@@ -3,26 +3,42 @@ export default {
   data() {
     return {
       url: 'google.com',
-      mode: 'myself'
+      look_for: 'myself',
+      mode: 'input',
+      country: 'N/A',
+      region: 'N/A',
+      timezone: 'N/A',
+      city: 'N/A',
+      coordinates: 'N/A',
     }
   },
   computed: {
-    modeIsMyself() {
-      return this.mode === 'myself'
+    lookingForMyself() {
+      return this.look_for === 'myself'
     },
-    modeIsURL() {
-      return this.mode === 'url'
+    lookingForURL() {
+      return this.look_for === 'url'
+    },
+    modeIsInput() {
+      return this.mode === 'input'
+    },
+    modeIsOutput() {
+      return this.mode === 'output'
     }
   },
   methods: {
     lookup() {
+      this.mode = 'output'
       console.log(this.url)
+    },
+    setLookfor(look_for) {
+      this.look_for = look_for
+      if (look_for === 'url') {
+        this.$refs.url.select()
+      }
     },
     setMode(mode) {
       this.mode = mode
-      if (mode === 'url') {
-        this.$refs.url.select()
-      }
     }
   }
 }
@@ -30,17 +46,32 @@ export default {
 
 <template>
 <div class="left">
-  <h1>IP and Address Lookup</h1>
+  <h1>IP and Address<br />Lookup</h1>
   <div class="left-body">
-    <div class="slider">
-      <span :class="{'selected': modeIsMyself}" @click="setMode('myself')">For myself</span>
-      <span :class="{'selected': modeIsURL}" @click="setMode('url')">For URL</span>
+    <div class="input-mode" v-if="modeIsInput">
+      <div class="slider">
+        <span :class="{'selected': lookingForMyself}" @click="setLookfor('myself')">For myself</span>
+        <span :class="{'selected': lookingForURL}" @click="setLookfor('url')">For URL</span>
+      </div>
+      <div class="input" :class="{'disabled': lookingForMyself}">
+        <span>Enter URL</span>
+        <input type="text" v-model="url" @keyup.enter="lookup" ref="url">
+      </div>
+      <button class="lookup" @click="lookup">Lookup</button>
     </div>
-    <div class="input" :class="{'disabled': modeIsMyself}">
-      <span>Enter URL</span>
-      <input type="text" v-model="url" @keyup.enter="lookup" ref="url">
+    <!-- Country: US
+    Region: NY
+    Timezone: America/New_York
+    City: Stony Brook
+    Coordinates: 40.9076° N, -73.122° W -->
+    <div class="output-mode" v-if="modeIsOutput">
+      <span><b>Country:</b> {{ country }}</span>
+      <span><b>Region:</b> {{ region }}</span>
+      <span><b>Timezone:</b> {{ timezone }}</span>
+      <span><b>City:</b> {{ city }}</span>
+      <span><b>Coordinates:</b> {{ coordinates }}</span>
+      <button class="back" @click="setMode('input')">Back</button>
     </div>
-    <button class="lookup" @click="lookup">Lookup</button>
   </div>
 </div>
 <div class="right">
@@ -59,12 +90,14 @@ html, body, #app {
   width: 100%;
   display: flex;
 }
+#app {
+  display: grid;
+  grid-template-columns: 333px 1fr;
+}
 .left {
-  width: 600px;
   display: flex;
   gap: 24px;
   flex-direction: column;
-  height: 100%;
   align-items: center;
   justify-content: center;
 }
@@ -89,12 +122,18 @@ html, body, #app {
 .slider span:not(.selected):hover {
   background: #f5f5f5;
 }
+.left h1 {
+  text-align: center;
+}
+.left-body {
+  width: 200px;
+}
 .input {
   display: flex;
   flex-direction: column;
 }
 .input input {
-  width: 225px;
+  width: 100%;
 }
 input[type=text] {
   font-size: 16px;
@@ -102,11 +141,19 @@ input[type=text] {
   border: 1px solid #808080;
   border-radius: 7px;
   margin-top: 6px;
+  box-sizing: border-box;
 }
-.left-body {
+.input-mode {
   display: flex;
   flex-direction: column;
   gap: 24px;
+}
+.output-mode {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  align-content: flex-start;
+  width: 100%;
 }
 button {
   border: none;
@@ -122,11 +169,10 @@ button {
 button:hover {
   background: #333;
 }
-.lookup {
+.lookup, .back {
   align-self: flex-end;
 }
 .right {
-  width: 100%;
   background: blue;
 }
 .disabled {

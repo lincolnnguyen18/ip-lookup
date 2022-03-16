@@ -44,5 +44,7 @@ const getIpInfo = async (ip) => {
 // });
 
 getIpInfo("129.49.100.88").then((res) => {
+  // replace _ with space in res.timezone
+  res.timezone = res.timezone.replace(/_/g, " ");
   console.log(res);
 });
