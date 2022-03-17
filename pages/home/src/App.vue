@@ -67,17 +67,20 @@ export default {
         let query = ""
         let queryLL = ""
         const regionNamesInEnglish = new Intl.DisplayNames(['en'], { type: 'region' });
-        if (data.country) {
-          query = regionNamesInEnglish.of(data.country)
+        if (data.country != "N/A") {
+          console.log(data.country)
+          data.country = regionNamesInEnglish.of(data.country)
+          this.country = data.country
+          query = data.country;
         }
         this.region = data.region ? data.region : 'N/A'
         if (data.region) {
-          query = `${data.region}, ${regionNamesInEnglish.of(data.country)}`
+          query = `${data.region}, ${data.country}`
         }
         this.timezone = data.timezone ? data.timezone : 'N/A'
         this.city = data.city ? data.city : 'N/A'
         if (data.city) {
-          query = `${data.city}, ${data.region}, ${regionNamesInEnglish.of(data.country)}`
+          query = `${data.city}, ${data.region}, ${data.country}`
         }
         if (data.ll) {
           let latitude = data.ll[0] > 0 ? `${data.ll[0]}°N` : `${-data.ll[0]}°S`
