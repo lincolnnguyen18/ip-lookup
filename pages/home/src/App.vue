@@ -95,6 +95,13 @@ export default {
         &zoom=4
         &maptype=roadmap`
         this.$refs.iframe.src = queryString
+      } else {
+        this.ip = 'N/A'
+        this.country = 'N/A'
+        this.region = 'N/A'
+        this.timezone = 'N/A'
+        this.city = 'N/A'
+        this.coordinates = 'N/A'
       }
     },
     lookupMyself: async function() {
