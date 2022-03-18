@@ -43,7 +43,7 @@ export default {
     back() {
       this.setMode('input')
       setTimeout(() => {
-        if (this.$refs.url && this.look_for === 'url')
+        if (this.$refs.url && this.look_for != 'myself')
           this.$refs.url.select()
       }, 1)
     },
