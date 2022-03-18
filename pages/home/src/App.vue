@@ -168,7 +168,7 @@ export default {
         <span :class="{'selected': lookingForIP}" @click="setLookfor('ip')">For IP</span>
       </div>
       <div class="input" :class="{'disabled': lookingForMyself}">
-        <span ref="input_text"></span>
+        <span ref="input_text">Enter IP</span>
         <input type="text" v-model="url" @keyup.enter="lookup" ref="url" class="url-input">
       </div>
       <div class="lookup">
