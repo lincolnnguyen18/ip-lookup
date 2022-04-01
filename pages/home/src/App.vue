@@ -43,8 +43,14 @@ export default {
     back() {
       this.setMode('input')
       setTimeout(() => {
-        if (this.$refs.url && this.look_for != 'myself')
+        if (this.$refs.url && this.look_for != 'myself') {
           this.$refs.url.select()
+          if (this.look_for == 'url') {
+            this.$refs.input_text.innerHTML = 'Enter URL'
+          } else {
+            this.$refs.input_text.innerHTML = 'Enter IP'
+          }
+        }
       }, 1)
     },
     lookup: async function() {
