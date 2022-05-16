@@ -274,9 +274,6 @@ html, body, #app {
 .left h1 {
   text-align: center;
 }
-.left-body {
-  width: 280px;
-}
 .input {
   display: flex;
   flex-direction: column;
